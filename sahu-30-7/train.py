@@ -4,6 +4,9 @@ from model import shufflenet
 from torch.utils.data import DataLoader
 from torchsummary import summary
 import time
+from tensorboard_logger import configure, log_value
+
+configure("logs\shufflenet-v1")
 
 train_path = "D:\\imp_data\\labels\\train.txt"
 test_path = "D:\\imp_data\\labels\\test.txt"
@@ -87,6 +90,10 @@ def train_and_validate(model, loss_criterion, optimizer, epochs):
             
             print("Batch number: {:03d}, Training: Loss: {:.4f}, Accuracy: {:.4f}".format(i, loss.item(), acc.item()))
 
+            log_value('Train loss', loss.item(), i)
+            log_value('Train Accuracy', acc.item(), i)
+
+
             
         # Validation - No gradient tracking needed
         with torch.no_grad():
@@ -133,7 +140,12 @@ def train_and_validate(model, loss_criterion, optimizer, epochs):
         epoch_end = time.time()
     
         print("Epoch : {:03d}, Training: Loss: {:.4f}, Accuracy: {:.4f}%, \n\t\tValidation : Loss : {:.4f}, Accuracy: {:.4f}%, Time: {:.4f}s".format(epoch, avg_train_loss, avg_train_acc*100, avg_valid_loss, avg_valid_acc*100, epoch_end-epoch_start))
-        
+        log_value('avg_train_loss', avg_train_loss, epoch)
+        log_value('avg_train_acc',avg_train_acc, epoch)
+        log_value('avg_valid_loss', avg_valid_loss, epoch)
+        log_value('avg_valid_acc', avg_valid_acc, epoch)
+
+            
         # Save if the model has best accuracy till now
         torch.save(model,'models/30-7/'+dataset+'_model_'+str(epoch)+'.pt')
             

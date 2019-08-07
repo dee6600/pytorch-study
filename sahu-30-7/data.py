@@ -42,3 +42,4 @@ if __name__ == '__main__':
     dataset = ImageDataset(path)
     x, y = dataset[165]
     print(x, x.shape, y)
+    print(len(dataset)//12)
